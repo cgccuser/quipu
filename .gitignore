@@ -7,4 +7,5 @@ null/
 target/
 
 .classpath
+.project
 metals.sbt
