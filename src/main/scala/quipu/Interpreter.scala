@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, by Vladimir Kostyukov and Contributors.
+ * Modifications copyright 2021, by cgccuser and Contributors.
  *
  * This file is part of Quipu project (https://github.com/vkostyukov/quipu)
  *
@@ -25,7 +26,7 @@ class InterpreterException(message: String) extends Exception(message)
 
 object Interpreter {
 
-  def apply(code: Array[Array[Knot]]) {
+  def apply(code: Array[Array[Knot]]) = {
 
     def resolveJump(n: Any): Int = n match {
       case i: Int if (i < code.length) => i
@@ -89,7 +90,7 @@ object Interpreter {
             jumped = true
             pointer = resolveJump(target)
           case InKnot =>
-            val str = Console.readLine()
+            val str = scala.io.StdIn.readLine()
             try {
               stack = str.toInt :: stack
             } catch {

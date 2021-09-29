@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, by Vladimir Kostyukov and Contributors.
+ * Modifications copyright 2021, by cgccuser and Contributors.
  *
  * This file is part of Quipu project (https://github.com/vkostyukov/quipu)
  *
@@ -41,5 +42,3 @@ case object HaltKnot extends Knot                                    // ::
 
 case object SelfKnot extends Knot                                    // ^^
 case object CopyKnot extends Knot                                    // ##
-
-

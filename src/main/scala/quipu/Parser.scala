@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, by Vladimir Kostyukov and Contributors.
+ * Modifications copyright 2021, by cgccuser and Contributors.
  *
  * This file is part of Quipu project (https://github.com/vkostyukov/quipu)
  *
@@ -226,7 +227,7 @@ object Parser {
     return array
   }
 
-  private def dumpBuffers(i: Int, s: String, thread: ArrayBuffer[Knot]) {
+  private def dumpBuffers(i: Int, s: String, thread: ArrayBuffer[Knot]) = {
     if (i != -1) {
       thread += new NumberKnot(i)
     }

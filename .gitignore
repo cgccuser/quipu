@@ -1,0 +1,10 @@
+.bloop/
+.bsp/
+.metals/
+.settings/
+.vscode/
+null/
+target/
+
+.classpath
+metals.sbt

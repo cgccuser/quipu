@@ -1,5 +1,6 @@
 /*
  * Copyright 2013, by Vladimir Kostyukov and Contributors.
+ * Modifications copyright 2021, by cgccuser and Contributors.
  *
  * This file is part of Quipu project (https://github.com/vkostyukov/quipu)
  *
@@ -21,12 +22,14 @@
 
 package quipu
 
-object Main extends App {
-  try {
-    Interpreter(Parser(scala.io.Source.fromFile(args(0))))
-  } catch {
-    case pe: ParserException => println("Parser error: " + pe.getMessage)
-    case ie: InterpreterException => println("Interpreter error: " + ie.getMessage)
-    case _: IndexOutOfBoundsException => println("No input file.")
+object Main {
+  def main(args: Array[String]): Unit = {
+    try {
+      Interpreter(Parser(scala.io.Source.fromFile(args(0))))
+    } catch {
+      case pe: ParserException => println("Parser error: " + pe.getMessage)
+      case ie: InterpreterException => println("Interpreter error: " + ie.getMessage)
+      case _: IndexOutOfBoundsException => println("No input file.")
+    }
   }
 }
