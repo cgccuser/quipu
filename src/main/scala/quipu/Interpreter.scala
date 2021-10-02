@@ -24,6 +24,8 @@
 
 package quipu
 
+import collection.mutable.ArrayBuffer
+
 class InterpreterException(message: String) extends Exception(message)
 
 object Interpreter {
@@ -37,57 +39,58 @@ object Interpreter {
     }
 
     var pointer = 0
-    var halted = code.length == 0
+    var halted = code.isEmpty
 
     while (!halted) { // over threads
       val thread = code(pointer)
 
-      var stack = List[Any](thread(0) match {
-        case NumberKnot(n) => n
-        case StringKnot(s) => s
-        case k => throw InterpreterException(s"Unexpected kind of knot $k at start")
-      })
+      val stack: ArrayBuffer[Any] = thread(0) match {
+        case NumberKnot(n) => ArrayBuffer(n)
+        case StringKnot(s) => ArrayBuffer(s)
+        case k =>
+          throw InterpreterException(s"Unexpected kind of knot $k at start")
+      }
 
       var knots: List[Knot] = thread.toList.tail // skips the self knot
       var jumped = false
-      var finished = knots.length == 0
+      var finished = knots.isEmpty
 
       while (!halted && !finished && !jumped) { // over knots
         knots.head match {
           case ReferenceKnot =>
-            val ref = stack(0) match {
+            val ref = stack.head match {
               case i: BigInt if (0 <= i && i < code.length) =>
                 code(i.intValue)(0) match {
                   case NumberKnot(n) => n
                   case StringKnot(s) => s
-                  case k => throw InterpreterException(s"Unexpected kind of knot $k at ${i.intValue}")
+                  case k =>
+                    throw InterpreterException(
+                      s"Unexpected kind of knot $k at ${i.intValue}"
+                    )
                 }
               case _ =>
                 throw InterpreterException(
                   "No such thread: \"" + stack(0) + "\"."
                 )
             }
-            stack = ref :: stack.tail
-          case NumberKnot(n) => stack = n :: stack
-          case StringKnot(s) => stack = s :: stack
-          case SelfKnot      => stack = stack.last :: stack
-          case CopyKnot      => stack = stack(0) :: stack
+            stack(0) = ref
+          case NumberKnot(n) => n +=: stack //Prepend n to stack
+          case StringKnot(s) => s +=: stack
+          case SelfKnot      => stack.last +=: stack
+          case CopyKnot      => stack.head +=: stack
           case OperationKnot(fn) =>
-            try {
-              (stack(1), stack(0)) match {
-                case (a: BigInt, b: BigInt) => stack = fn(a, b) :: stack
-                case _ => throw InterpreterException("Type mismatch.")
-              }
-            } catch {
-              case e: IndexOutOfBoundsException =>
-                throw InterpreterException(
-                  "Not enough arguments for operation."
-                )
+            if (stack.size < 2)
+              throw InterpreterException(
+                "Not enough arguments for operation."
+              )
+            (stack(1), stack(0)) match {
+              case (a: BigInt, b: BigInt) => fn(a, b) +=: stack
+              case _ => throw InterpreterException("Type mismatch.")
             }
           case ConditionalJumpKnot(p) =>
-            val target = stack(0)
-            stack = stack.tail
-            stack(0) match {
+            val target = stack.head
+            stack.dropInPlace(1)
+            stack.head match {
               case i: BigInt =>
                 if (p(i)) {
                   jumped = true
@@ -95,34 +98,34 @@ object Interpreter {
                 }
               case _ =>
                 throw InterpreterException(
-                  "Can't apply jump predicate to: " + stack(0)
+                  "Can't apply jump predicate to: " + stack.head
                 )
             }
           case JumpKnot =>
             val target = stack(0)
-            stack = stack.tail
+            stack.dropInPlace(1)
             jumped = true
             pointer = resolveJump(target)
           case InKnot =>
             val str = scala.io.StdIn.readLine()
             try {
-              stack = BigInt(str) :: stack
+              BigInt(str) +=: stack
             } catch {
-              case e: NumberFormatException => stack = str :: stack
+              case e: NumberFormatException => str +=: stack
             }
-          case OutKnot  => Console.print(stack(0))
+          case OutKnot  => Console.print(stack.head)
           case HaltKnot => halted = true
         }
 
         knots = knots.tail
-        finished = (knots == Nil)
+        finished = knots.isEmpty
       }
 
       if (!jumped && !halted) {
         if (pointer + 1 == code.length) {
           halted = true
         } else {
-          pointer = pointer + 1
+          pointer += 1
         }
       }
 
