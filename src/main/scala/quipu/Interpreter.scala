@@ -16,7 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributor(s): -
+ * Contributor(s):
+ *  - David Loscutoff
  *
  */
 
@@ -29,7 +30,7 @@ object Interpreter {
   def apply(code: Array[Array[Knot]]) = {
 
     def resolveJump(n: Any): Int = n match {
-      case i: Int if (i < code.length) => i
+      case i: BigInt if (i < code.length) => i.intValue
       case _  => throw new InterpreterException("No such thread: \"" + n + "\".")
     }
 
@@ -52,7 +53,7 @@ object Interpreter {
         knots.head match {
           case ReferenceKnot =>
             val ref = stack(0) match {
-              case i: Int if (i < code.length) => code(i)(0) match {
+              case i: BigInt if (i < code.length) => code(i.intValue)(0) match {
                 case NumberKnot(n) => n
                 case StringKnot(s) => s
               }
@@ -66,8 +67,8 @@ object Interpreter {
           case OperationKnot(fn) =>
             try {
               (stack(1), stack(0)) match {
-                case (a: Int, b: Int) => stack = fn(a, b) :: stack
-                case _ => throw new InterpreterException("Type missmatch.")
+                case (a: BigInt, b: BigInt) => stack = fn(a, b) :: stack
+                case _ => throw new InterpreterException("Type mismatch.")
               }
             } catch {
               case e: IndexOutOfBoundsException =>
@@ -77,7 +78,7 @@ object Interpreter {
             val target = stack(0)
             stack = stack.tail
             stack(0) match {
-              case i: Int =>
+              case i: BigInt =>
                 if (p(i)) {
                   jumped = true
                   pointer = resolveJump(target)
@@ -92,7 +93,7 @@ object Interpreter {
           case InKnot =>
             val str = scala.io.StdIn.readLine()
             try {
-              stack = str.toInt :: stack
+              stack = BigInt(str) :: stack
             } catch {
               case e: NumberFormatException => stack = str :: stack
             }
@@ -114,7 +115,7 @@ object Interpreter {
 
       if (!halted) {
         thread(0) = stack(0) match {
-          case i: Int => new NumberKnot(i)
+          case i: BigInt => new NumberKnot(i)
           case s: String => new StringKnot(s)
         }
       }

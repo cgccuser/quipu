@@ -1,8 +1,8 @@
 Quipu Programming Language
 ==========================
 
-[Quipu](http://esolangs.org/wiki/Quipu) - is an esoteric programming language inspired by [Quipus](http://en.wikipedia.org/wiki/Quipu)
-(also known as "talking knots") - recording devices historically used by [Incs](http://en.wikipedia.org/wiki/Inca_Empire). 
+[Quipu](http://esolangs.org/wiki/Quipu) is an esoteric programming language inspired by [Quipus](http://en.wikipedia.org/wiki/Quipu)
+(also known as "talking knots") - recording devices historically used by the [Incas](http://en.wikipedia.org/wiki/Inca_Empire).
 
 Code Samples
 ------------
@@ -24,18 +24,18 @@ Prints "Hello World!" (without quotes)
     \n
     /\
 
-Calculates the factorial of given number 
+Calculates the factorial of given number
 
     "0  1  2  3  4  5  6"
 
     \/ 2& 1& 4& 1& 1& 1&
     6& [] -- [] ^^ [] /\
-    == ** 0& 4& -- /\    
-       1& [] == 1& :: 
-       -- -- 2& >>        
-       4& 4& []           
-       [] [] 1&           
-       ** ** >>          
+    == ** 0& 4& -- /\
+       1& [] == 1& ::
+       -- -- 2& >>
+       4& 4& []
+       [] [] 1&
+       ** ** >>
        1& 0&
        ++ []
           ++

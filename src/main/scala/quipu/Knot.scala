@@ -16,7 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributor(s): -
+ * Contributor(s):
+ *  - David Loscutoff
  *
  */
 
@@ -24,12 +25,12 @@ package quipu
 
 abstract class Knot
 
-case class NumberKnot(value: Int) extends Knot                       // 1%2&
+case class NumberKnot(value: BigInt) extends Knot                       // 1%2&
 case class StringKnot(value: String) extends Knot                    // 'a'b'c'\n
 
-case class OperationKnot(fn: (Int, Int) => Int) extends Knot         // ++, --, **, //, %%
+case class OperationKnot(fn: (BigInt, BigInt) => BigInt) extends Knot         // ++, --, **, //, %%
 
-case class ConditionalJumpKnot(p: (Int) => Boolean) extends Knot     // >>, >=, <<, <=, ==
+case class ConditionalJumpKnot(p: (BigInt) => Boolean) extends Knot     // >>, >=, <<, <=, ==
 
 case object ReferenceKnot extends Knot                               // []
 
