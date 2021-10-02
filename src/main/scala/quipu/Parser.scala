@@ -16,7 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributor(s): -
+ * Contributor(s):
+ *  - David Loscutoff
  *
  */
 
@@ -36,7 +37,7 @@ object Parser {
     var threads: List[Int] = Nil // used to idents
 
     var strBuffer: Array[String] = Array()
-    var intBuffer: Array[Int] = Array()
+    var intBuffer: Array[BigInt] = Array()
 
     var result: ArrayBuffer[Thread] = ArrayBuffer()
 
@@ -88,17 +89,17 @@ object Parser {
                   if (intBuffer(i) == -1) {
                     intBuffer(i) = 0
                   }
-                  intBuffer(i) += c.toString.toInt
+                  intBuffer(i) += BigInt(c.toString)
                 case '@' =>
                   if (intBuffer(i) == -1) {
                     intBuffer(i) = 0
                   }
-                  intBuffer(i) += c.toString.toInt * 10
+                  intBuffer(i) += BigInt(c.toString) * 10
                 case '%' =>
                   if (intBuffer(i) == -1) {
                     intBuffer(i) = 0
                   }
-                  intBuffer(i) += c.toString.toInt * 100
+                  intBuffer(i) += BigInt(c.toString) * 100
                 case '#' =>
                   if (intBuffer(i) == -1) {
                     intBuffer(i) = 0
@@ -106,7 +107,7 @@ object Parser {
                   if (intBuffer(i) != 0) {
                     intBuffer(i) = intBuffer(i) * 10
                   }
-                  intBuffer(i) += c.toString.toInt * 1000
+                  intBuffer(i) += BigInt(c.toString) * 1000
                }
             case '\'' => strBuffer(i) += line(index + 1)
             case '\\' =>
@@ -227,7 +228,7 @@ object Parser {
     return array
   }
 
-  private def dumpBuffers(i: Int, s: String, thread: ArrayBuffer[Knot]) = {
+  private def dumpBuffers(i: BigInt, s: String, thread: ArrayBuffer[Knot]) = {
     if (i != -1) {
       thread += new NumberKnot(i)
     }
