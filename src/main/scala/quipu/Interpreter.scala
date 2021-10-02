@@ -18,6 +18,7 @@
  *
  * Contributor(s):
  *  - David Loscutoff
+ *  - cgccuser
  *
  */
 
@@ -30,7 +31,7 @@ object Interpreter {
   def apply(code: Array[Array[Knot]]) = {
 
     def resolveJump(n: Any): Int = n match {
-      case i: BigInt if (i < code.length) => i.intValue
+      case i: BigInt if (0 <= i && i < code.length) => i.intValue
       case _  => throw new InterpreterException("No such thread: \"" + n + "\".")
     }
 
@@ -53,7 +54,7 @@ object Interpreter {
         knots.head match {
           case ReferenceKnot =>
             val ref = stack(0) match {
-              case i: BigInt if (i < code.length) => code(i.intValue)(0) match {
+              case i: BigInt if (0 <= i && i < code.length) => code(i.intValue)(0) match {
                 case NumberKnot(n) => n
                 case StringKnot(s) => s
               }
