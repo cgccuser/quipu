@@ -29,10 +29,11 @@ class InterpreterException(message: String) extends Exception(message)
 object Interpreter {
 
   def apply(code: Array[Array[Knot]]) = {
+    import Knot.*
 
     def resolveJump(n: Any): Int = n match {
       case i: BigInt if (0 <= i && i < code.length) => i.intValue
-      case _  => throw new InterpreterException("No such thread: \"" + n + "\".")
+      case _ => throw InterpreterException("No such thread: \"" + n + "\".")
     }
 
     var pointer = 0
@@ -41,10 +42,11 @@ object Interpreter {
     while (!halted) { // over threads
       val thread = code(pointer)
 
-      var stack: List[Any] = thread(0) match {
-        case NumberKnot(n) => n :: Nil
-        case StringKnot(s) => s :: Nil
-      }
+      var stack = List[Any](thread(0) match {
+        case NumberKnot(n) => n
+        case StringKnot(s) => s
+        case k => throw InterpreterException(s"Unexpected kind of knot $k at start")
+      })
 
       var knots: List[Knot] = thread.toList.tail // skips the self knot
       var jumped = false
@@ -54,26 +56,33 @@ object Interpreter {
         knots.head match {
           case ReferenceKnot =>
             val ref = stack(0) match {
-              case i: BigInt if (0 <= i && i < code.length) => code(i.intValue)(0) match {
-                case NumberKnot(n) => n
-                case StringKnot(s) => s
-              }
-              case _  => throw new InterpreterException("No such thread: \"" + stack(0) + "\".")
+              case i: BigInt if (0 <= i && i < code.length) =>
+                code(i.intValue)(0) match {
+                  case NumberKnot(n) => n
+                  case StringKnot(s) => s
+                  case k => throw InterpreterException(s"Unexpected kind of knot $k at ${i.intValue}")
+                }
+              case _ =>
+                throw InterpreterException(
+                  "No such thread: \"" + stack(0) + "\"."
+                )
             }
             stack = ref :: stack.tail
           case NumberKnot(n) => stack = n :: stack
           case StringKnot(s) => stack = s :: stack
-          case SelfKnot => stack = stack.last :: stack
-          case CopyKnot => stack = stack(0) :: stack
+          case SelfKnot      => stack = stack.last :: stack
+          case CopyKnot      => stack = stack(0) :: stack
           case OperationKnot(fn) =>
             try {
               (stack(1), stack(0)) match {
                 case (a: BigInt, b: BigInt) => stack = fn(a, b) :: stack
-                case _ => throw new InterpreterException("Type mismatch.")
+                case _ => throw InterpreterException("Type mismatch.")
               }
             } catch {
               case e: IndexOutOfBoundsException =>
-                throw new InterpreterException("Not enough arguments for operation.")
+                throw InterpreterException(
+                  "Not enough arguments for operation."
+                )
             }
           case ConditionalJumpKnot(p) =>
             val target = stack(0)
@@ -84,7 +93,10 @@ object Interpreter {
                   jumped = true
                   pointer = resolveJump(target)
                 }
-              case _ => throw new InterpreterException("Can't apply jump predicate to: " + stack(0))
+              case _ =>
+                throw InterpreterException(
+                  "Can't apply jump predicate to: " + stack(0)
+                )
             }
           case JumpKnot =>
             val target = stack(0)
@@ -98,7 +110,7 @@ object Interpreter {
             } catch {
               case e: NumberFormatException => stack = str :: stack
             }
-          case OutKnot => Console.print(stack(0))
+          case OutKnot  => Console.print(stack(0))
           case HaltKnot => halted = true
         }
 

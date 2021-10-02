@@ -18,28 +18,22 @@
  *
  * Contributor(s):
  *  - David Loscutoff
+ *  - cgccuser
  *
  */
 
 package quipu
 
-abstract class Knot
-
-case class NumberKnot(value: BigInt) extends Knot                       // 1%2&
-case class StringKnot(value: String) extends Knot                    // 'a'b'c'\n
-
-case class OperationKnot(fn: (BigInt, BigInt) => BigInt) extends Knot         // ++, --, **, //, %%
-
-case class ConditionalJumpKnot(p: (BigInt) => Boolean) extends Knot     // >>, >=, <<, <=, ==
-
-case object ReferenceKnot extends Knot                               // []
-
-case object JumpKnot extends Knot                                    // ??
-
-case object InKnot extends Knot                                      // \/
-case object OutKnot extends Knot                                     // /\
-
-case object HaltKnot extends Knot                                    // ::
-
-case object SelfKnot extends Knot                                    // ^^
-case object CopyKnot extends Knot                                    // ##
+enum Knot {
+  case NumberKnot(value: BigInt) // 1%2&
+  case StringKnot(value: String) // 'a'b'c'\n
+  case OperationKnot(fn: (BigInt, BigInt) => BigInt) // ++, --, **, //, %%
+  case ConditionalJumpKnot(p: (BigInt) => Boolean) // >>, >=, <<, <=, ==
+  case ReferenceKnot // []
+  case JumpKnot // ??
+  case InKnot // \/
+  case OutKnot // /\
+  case HaltKnot // ::
+  case SelfKnot // ^^
+  case CopyKnot // ##
+}

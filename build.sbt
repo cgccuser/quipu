@@ -4,8 +4,7 @@ val mainPath = Some("quipu.Main")
 
 name := projectName
 Compile / mainClass := mainPath
-//Run using `runMain quipu.Main "src\\\\main\\\\resources\\\\HelloWorld.quipu"`
-//(yes, it didn't work without the extra backslashes (on Windows), I don't know why)
+//Run using `runMain quipu.Main "src/main/resources/HelloWorld.quipu"`
 
 //Automatically run "sbt reload" when build.sbt is changed
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -21,7 +20,9 @@ lazy val root = project
       "-deprecation",
       "-encoding",
       "UTF-8",
-      "-feature",
+      "-feature"
     ),
-    libraryDependencies ++= Seq("org.scala-lang" %% "scala3-library" % scala3Version)
+    libraryDependencies ++= Seq(
+      "org.scala-lang" %% "scala3-library" % scala3Version
+    )
   )

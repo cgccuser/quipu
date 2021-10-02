@@ -17,7 +17,7 @@
  * limitations under the License.
  *
  * Contributor(s): -
- *
+ *  - cgccuser
  */
 
 package quipu
@@ -28,7 +28,8 @@ object Main {
       Interpreter(Parser(scala.io.Source.fromFile(args(0))))
     } catch {
       case pe: ParserException => println("Parser error: " + pe.getMessage)
-      case ie: InterpreterException => println("Interpreter error: " + ie.getMessage)
+      case ie: InterpreterException =>
+        println("Interpreter error: " + ie.getMessage)
       case _: IndexOutOfBoundsException => println("No input file.")
     }
   }

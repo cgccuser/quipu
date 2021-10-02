@@ -18,19 +18,19 @@
  *
  * Contributor(s):
  *  - David Loscutoff
- *
+ *  - cgccuser
  */
 
 package quipu
 
-import io.Source
-import collection.mutable.{ArrayBuffer}
+import collection.mutable.ArrayBuffer
 
 class ParserException(message: String) extends Exception(message)
 
 object Parser {
 
-  def apply(source: Source): Array[Array[Knot]] = {
+  def apply(source: io.Source): Array[Array[Knot]] = {
+    import Knot.*
 
     type Thread = ArrayBuffer[Knot]
 
@@ -42,7 +42,6 @@ object Parser {
     var result: ArrayBuffer[Thread] = ArrayBuffer()
 
     source.getLines foreach { l =>
-
       val line: Seq[Char] = l
 
       var index = 0 // pointer to line character
@@ -63,8 +62,8 @@ object Parser {
             }
           }
 
-          strBuffer = Array.fill(threads.length) {""}
-          intBuffer = Array.fill(threads.length) {-1}
+          strBuffer = Array.fill(threads.length) { "" }
+          intBuffer = Array.fill(threads.length) { -1 }
         }
       }
 
@@ -108,7 +107,7 @@ object Parser {
                     intBuffer(i) = intBuffer(i) * 10
                   }
                   intBuffer(i) += BigInt(c.toString) * 1000
-               }
+              }
             case '\'' => strBuffer(i) += line(index + 1)
             case '\\' =>
               line(index + 1) match {
@@ -121,10 +120,10 @@ object Parser {
                   strBuffer(i) = ""
               }
             case '+' =>
-                dumpBuffers(intBuffer(i), strBuffer(i), thread)
-                thread += new OperationKnot((x, y) => x + y)
-                intBuffer(i) = -1
-                strBuffer(i) = ""
+              dumpBuffers(intBuffer(i), strBuffer(i), thread)
+              thread += new OperationKnot((x, y) => x + y)
+              intBuffer(i) = -1
+              strBuffer(i) = ""
             case '-' =>
               dumpBuffers(intBuffer(i), strBuffer(i), thread)
               thread += new OperationKnot((x, y) => x - y)
@@ -230,10 +229,10 @@ object Parser {
 
   private def dumpBuffers(i: BigInt, s: String, thread: ArrayBuffer[Knot]) = {
     if (i != -1) {
-      thread += new NumberKnot(i)
+      thread += Knot.NumberKnot(i)
     }
     if (s != "") {
-      thread += new StringKnot(s)
+      thread += Knot.StringKnot(s)
     }
   }
 }
