@@ -68,7 +68,7 @@ object Interpreter {
             try {
               (stack(1), stack(0)) match {
                 case (a: BigInt, b: BigInt) => stack = fn(a, b) :: stack
-                case _ => throw new InterpreterException("Type missmatch.")
+                case _ => throw new InterpreterException("Type mismatch.")
               }
             } catch {
               case e: IndexOutOfBoundsException =>
